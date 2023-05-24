@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Column,} from "react-table";
 import Table  from "./components/Table";
-import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
 import axios from "axios";
-import { useQuery,useMutation, QueryCache,QueryClient } from "@tanstack/react-query";
+import { useQuery,useMutation,QueryClient } from "@tanstack/react-query";
 import { IUser } from "./components/Type";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
@@ -108,7 +107,7 @@ export default function App() {
     []
   );
 
-  const { data, isLoading, error } = useQuery<IUser[], Error>(['data'], fetchData);
+  const { data,} = useQuery<IUser[], Error>(['data'], fetchData);
   const [newUser, setNewUser] = useState<IUser>({
     // Initial values for the new user
   });
@@ -158,7 +157,6 @@ export default function App() {
     },
   });
 
-  
 
   return (
     <div className="App">
