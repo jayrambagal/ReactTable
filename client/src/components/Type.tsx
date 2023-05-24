@@ -2,7 +2,7 @@ export interface IAddress {
   street: string;
 }
 export interface IUser {
-  id?: number;
+  id?: any;
   name?: string;
   username?: string;
   address?: IAddress;

@@ -206,7 +206,7 @@ function Table<T extends object>(props: TableProps<T>) {
                     <tr {...row.getRowProps()} key={row.id}>
                       {row.cells.map((cell) => {
                         // console.log();
-                        // console.log(row);
+                        // console.log("row",row);
                         return (
                           <td
                             {...cell.getCellProps()}
