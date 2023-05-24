@@ -102,7 +102,7 @@ function Table<T extends object>(props: TableProps<T>) {
     <div className="w-screen h-screen flex flex-col items-center border-spacing-8 border-cyan-500 border-s-indigo-100 ">
       {!flag ? (
         <div className="w-[1100px]">
-          <div className="flex mt-[30px] ">
+          <div className="flex mt-[10px] ">
             <p className="text-xl font-semibold"> Company Setting</p>
           </div>
 
