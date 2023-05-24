@@ -2,17 +2,47 @@ const User = require("../DataBase/userSchema")
 
 // taking data from req.body and store the data in mongodb Database 
 const PostData = async(req,res)=>{
-    const {id,first_name,last_name,email,gender,avatar,status,last_login,role} = req.body
-    
+
+  const {id,first_name,last_name,email,gender,avatar,status,last_login,role} = req.body
+
     try{
-        const user = new User({id,first_name,last_name,email,gender,avatar,status,last_login,role})
-        await user.save()
-        res.status(200).json({message:"sucsessfull"}) 
-    }catch(err){
-        console.log(err)
-        res.send(err)
-    } 
+      
+      const user = new User({id,first_name,last_name,email,gender,avatar,status,last_login,role})
+      user.save()
+      res.status(200).json({message:"sucsessfull"}) 
+      
+  }catch(err){
+      console.log(err)
+      res.send(err)
+  } 
+    
+
 }
+
+// const PostData = async(req,res)=>{
+
+//   req.body.map(({id,first_name,last_name,email,gender,avatar,status,last_login,role})=>{
+//     try{
+      
+//       const user = new User({id,first_name,last_name,email,gender,avatar,status,last_login,role})
+//       user.save()
+      
+//   }catch(err){
+//       console.log(err)
+//       res.send(err)
+//   } 
+//    try{
+      
+//         const user = new User({id,first_name,last_name,email,gender,avatar,status,last_login,role})
+//         user.save()
+        
+//     }catch(err){
+//         console.log(err)
+//         res.send(err)
+//     } 
+//     res.status(200).json({message:"sucsessfull"}) 
+//   }) 
+// }
 
 const GetData = async(req,res)=>{
     const user = await User.find({})

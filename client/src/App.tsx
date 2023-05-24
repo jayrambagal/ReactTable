@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useTable, Column, usePagination,useSortBy } from "react-table";
-import { Table } from "./components/Table";
+import { Column,} from "react-table";
+import Table  from "./components/Table";
 import ArrowDownwardIcon from "@mui/icons-material/ArrowDownward";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
 import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery,useMutation, QueryCache,QueryClient } from "@tanstack/react-query";
 import { IUser } from "./components/Type";
-import { BooleanLiteral } from "typescript";
+import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
+import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 
 
 export interface IAddress {
@@ -23,62 +23,30 @@ type Data = {
   email?: string;
   gender?: string;
   avatar?: string;
-  status?: string;
+  status?: string | string | undefined;
   last_login?: string;
   role?: string;
-  view: React.ReactNode;
-  
+  view?: React.ReactNode;
 };
 
-// const createArr = (n: number): Data[] => {
-//   const data: Data[] = [];
-//   for (let i = 0; i < 4; i += 1) {
-//     data.push({
-//       first_name: `ID-${Math.random().toFixed(4)}`,
-//       status: new Date().toDateString(),
-//       role: `Rick #${i}`,
-//       last_login: `Sanchez #${i}`,
-//       view: (
-//         <div className="flex gap-3 cursor-pointer">
-//           <DeleteOutlinedIcon /> <ModeEditOutlinedIcon />
-//         </div>
-//       ),
-//       id: i,
-//     });
-//   }
-//   return data;
-// };
 
 export default function App() {
-  const [data, setData] = useState<IUser[]>([]);
+  const [apidata, setData] = useState<IUser[]>([]);
+  const queryClient = new QueryClient();
 
   const fetchData = async () => {
     const uri = "http://localhost:5000/getdata";
-    // const uri = "./MOCK_DATA.json";
     const response = await axios.get<IUser[]>(uri);
     setData(response.data);
     console.log(response.data);
-  };
-  //fetch the api here.
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const handleDelete = (id:number )=> {
-    // Filter out the item with the provided ID
-    const updatedData = data.filter(item => item.id !== id);
-    setData(updatedData);
+    return response.data
   };
 
-  // const data = React.useMemo<Data[]>(() => createArr(100), []);
+
   const columns = React.useMemo<Column<Data>[]>(
     () => [
       {
-        Header: () => (
-          <>
-            Name <ArrowDownwardIcon />
-          </>
-        ),
+        Header: "Name",
         accessor: "first_name",
         Cell: ({ row }: any) => (
           <div className="flex gap-2" >
@@ -95,59 +63,106 @@ export default function App() {
           </div>
         ),
         width: "250px",
+        sortType: "basic"
       },
       {
-        Header: () => (
-          <>
-            Status <ArrowDownwardIcon />
-          </>
-        ),
+        Header: "Status",
         accessor: "status",
         Cell: ({ row }: any) => (
           <div className="flex gap-2" >
-          {row.original.gender==="male"? <span className="badge bg-secondary">invited</span>:<span className="badge bg-success">Active</span>}
+          {row.original.status==="true"? <span className="badge bg-secondary">invited</span>:<span className="badge bg-success">Active</span>
+        }
             
           </div>
          
         ),
         width: "30px",
+        sortType: "basic"
       },
       {
-        Header: () => (
-          <>
-            Role <ArrowDownwardIcon />
-          </>
-        ),
+        Header: "Role" ,
         accessor: "role",
         width: "80px",
+        sortType: "basic"
       },
       {
-        Header: () => (
-          <>
-            Last Login <ArrowDownwardIcon />
-          </>
-        ),
+        Header:"Last Login", 
         accessor: "last_login",
         width: "80px",
+        sortType: "basic"
       },
-      
+      {
+        Header:"View", 
+        accessor: "view",
+        Cell: ({ row }: any) => (
+          <div className="flex gap-2" >
+          <DeleteOutlinedIcon onClick={() => handleDelete.mutate(row.original._id)} />
+
+          <ModeEditOutlinedIcon onClick={() => handleEdit(row.original._id)}  />
+            
+          </div>
+         
+        ),
+      }
     ],
     []
   );
 
-  const { getTableProps, getTableBodyProps, headerGroups, rows, prepareRow } =
-    useTable<Data>({ columns, data });
+  const { data, isLoading, error } = useQuery<IUser[], Error>(['data'], fetchData);
+  const [newUser, setNewUser] = useState<IUser>({
+    // Initial values for the new user
+  });
+
+  const createUserMutation = useMutation((newUser: IUser) => {
+    const uri = "http://localhost:5000/postdata";
+    return axios.post(uri, newUser);
+  }, {
+    onSuccess: () => {
+      queryClient.invalidateQueries(['data']);
+    },
+  });
+
+  const handleCreateUser = async (User:any) => {
+    console.log("mai hu handlecreate mai");
+    console.log("check",User);
+    
+    
+    setNewUser({
+      id: User.id,
+      first_name: User.first_name,
+      last_name: User.last_name,
+      email: User.email,
+      gender: User.gender,
+      avatar: User.avatar,
+      status: User.status,
+      last_login: User.last_login,
+      role: User.role,
+    })
+    console.log("data",newUser);
+    await createUserMutation.mutateAsync(newUser);
+    await fetchData(); 
+  };
+
+ 
+  const handleEdit = (id: any) => {
+    console.log(id);
+    
+  };
+
+  const handleDelete =  useMutation((id) => {
+    return axios.delete(`http://localhost:5000/deletedata/${id}`);
+  },{
+    onSuccess: () => {
+      window.alert("You want to delete this data")
+      fetchData()
+    },
+  });
+
+  
 
   return (
     <div className="App">
-      <Table<Data>
-        getTableProps={getTableProps}
-        getTableBodyProps={getTableBodyProps}
-        headerGroups={headerGroups}
-        rows={rows}
-        prepareRow={prepareRow}
-       
-      />
+      <Table data={apidata} columns={columns}  onCreateUser={handleCreateUser}  />
     </div>
   );
 }
