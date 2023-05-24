@@ -102,7 +102,8 @@ function Table<T extends object>(props: TableProps<T>) {
     <div className="w-screen h-screen flex flex-col items-center border-spacing-8 border-cyan-500 border-s-indigo-100 ">
       {!flag ? (
         <div className="w-[1100px]">
-          <div className="flex mt-[30px] ">
+          {/* ***************************** Heading of the page *********************************** */}
+          <div className="flex mt-[10px] ">
             <p className="text-xl font-semibold"> Company Setting</p>
           </div>
 
@@ -117,6 +118,8 @@ function Table<T extends object>(props: TableProps<T>) {
               Intigrations
             </div>
           </div>
+
+          {/* ************************************ Table Headers ****************************************************** */}
           <div className="mt-[20px] border-2 border-black-800 rounded-md">
             <div className="flex justify-between p-6  border-b-2 border-b-[rgb(115 115 115)]">
               <div>
@@ -156,18 +159,15 @@ function Table<T extends object>(props: TableProps<T>) {
                 </Button>
               </div>
             </div>
+
+            {/* ***************************************************** Table Start Here **************************************************/}
             <table {...getTableProps()} className="w-full ">
+              {/* Headings */}
               <thead className="">
                 {headerGroups.map((headerGroup) => (
                   <tr {...headerGroup.getHeaderGroupProps()}>
                     {headerGroup.headers.map((column) => (
-                      // <th
-                      //   {...column.getHeaderProps(getSortByToggleProps())}
-                      //   className="p-3 text-[#5C5C5C]"
-                      //   style={{ textAlign: "start", width: column.width }}
-                      // >
-                      //   {column.render("Header")}
-                      // </th>
+
                       <th
                         {...column.getHeaderProps(
                           column.getSortByToggleProps()
@@ -193,6 +193,7 @@ function Table<T extends object>(props: TableProps<T>) {
                   </tr>
                 ))}
               </thead>
+              {/* Body */}
               <tbody {...getTableBodyProps()} className="">
                 {page.map((row, rowIndex) => {
                   prepareRow(row);
@@ -222,6 +223,7 @@ function Table<T extends object>(props: TableProps<T>) {
                 })}
               </tbody>
             </table>
+            {/* ***************************************** Pagination ****************************************************** */}
             <br />
             <div className="flex justify-between p-4 mt-[-20px]">
               <Button
@@ -266,6 +268,7 @@ function Table<T extends object>(props: TableProps<T>) {
             </div>
           </div>
         </div>
+        // ************************************* Form for create users ***********************************************************
       ) : (
         <form onSubmit={handleSubmit} className="flex flex-col gap-2 mt-2">
           <label>

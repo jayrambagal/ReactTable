@@ -7,7 +7,7 @@ const {
     UpdateDataById,
     GetData,
     DeleteDataById
-} = require("../controllers/auth")
+} = require("../controllers")
 
 
 // GET
