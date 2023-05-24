@@ -7,32 +7,18 @@ import { IUser } from "./components/Type";
 import DeleteOutlinedIcon from "@mui/icons-material/DeleteOutlined";
 import ModeEditOutlinedIcon from "@mui/icons-material/ModeEditOutlined";
 
-export interface IAddress {
-  street: string;
-}
-
-type Data = {
-  id?: number;
-  name?: string;
-  username?: string;
-  address?: IAddress;
-  first_name?: string;
-  last_name?: string;
-  email?: string;
-  gender?: string;
-  avatar?: string;
-  status?: string | string | undefined;
-  last_login?: string;
-  role?: string;
-  view?: React.ReactNode;
-};
 
 export default function App() {
+
+  // ***************************** Used for Updating the data ******************************
   const [newName, setNewName] = useState('')
   const [newRole, setNewRole] = useState('')
   const [newLastname,setNewLastname] = useState('')
+
+  // *********************** Used in Conditional Rendering *********************************
   const [flag, setFlag] = useState(false) 
 
+  // ******************** setting row values (can Optimized it but used brute force way) ***************************************
   const [_id,set_Id] = useState('')
   const [id, setId] =useState('')
   const [firstname,setFirstname] = useState('')
@@ -44,10 +30,11 @@ export default function App() {
   const [lastlogin,setLastlogin] = useState('')
   const [role,setRole] = useState('')
   
-  
+  // **************************** Storing the rows values **********************************************
   const [apidata, setData] = useState<IUser[]>([]);
   const queryClient = new QueryClient();
 
+  // **************** function for fetching the data from API *********************************
   const fetchData = async () => {
     const uri = "http://localhost:5000/getdata";
     const response = await axios.get<IUser[]>(uri);
@@ -56,7 +43,8 @@ export default function App() {
     return response.data;
   };
 
-  const columns = React.useMemo<Column<Data>[]>(
+  // ***************************** Creating the columns Headers for Table ****************************
+  const columns = React.useMemo<Column<IUser>[]>(
     () => [
       {
         Header: "Name",
@@ -129,11 +117,11 @@ export default function App() {
     []
   );
 
+  // ********************* setting the key for refetching the data ************************************
   const { data } = useQuery<IUser[], Error>(["data"], fetchData);
-  const [newUser, setNewUser] = useState<IUser>({
-    // Initial values for the new user
-  });
+  const [newUser, setNewUser] = useState<IUser>({});
 
+  // ******************************** mutation call for create new user ***************************************
   const createUserMutation = useMutation(
     (newUser: IUser) => {
       const uri = "http://localhost:5000/postdata";
@@ -146,10 +134,10 @@ export default function App() {
     }
   );
 
+  //  ******************************* when we create a new User ******************************************
   const handleCreateUser = async (User: any) => {
     console.log("mai hu handlecreate mai");
     console.log("check", User);
-
     setNewUser({
       id: User.id,
       first_name: User.first_name,
@@ -166,11 +154,10 @@ export default function App() {
     await fetchData();
   };
 
+  // ********************* Updating using mutation *******************************************
   const updateData = useMutation(async (newData :any) => {
-    console.log(_id);
-    console.log(newData);
-    
-    
+    // console.log(_id);
+    // console.log(newData);
     const response = await fetch(`http://localhost:5000/updatedata/${_id}`, {
       method: 'PUT',
       headers: {
@@ -186,6 +173,7 @@ export default function App() {
     }
   })
 
+  // **************** Used for Updating the values ********************************************
   const UpdateDataById = async (event:any) => {
     event.preventDefault()
     const UpdatedData = {
@@ -199,15 +187,12 @@ export default function App() {
       last_login: lastlogin,
       role: newRole,
     }
-
     console.log("helo",updateData);
-    
   await updateData.mutateAsync(UpdatedData);
-
   setFlag(!flag)
   };
   
-
+  // ********************** when we click on edit option then all rows values are set to useState *******************
   const handleEdit = (row: any) => {
     setFlag(true)
     set_Id(row._id)
@@ -222,6 +207,7 @@ export default function App() {
     setRole(row.role)
   };
 
+  //  ************************************* Delete the Specific row *********************************************
   const handleDelete = useMutation(
     (id) => {
       return axios.delete(`http://localhost:5000/deletedata/${id}`);
@@ -234,6 +220,7 @@ export default function App() {
     }
   );
 
+  // ********************************************* { jsx } ***************************************************************
   return (
     <div className="App flex justify-center">
       {!flag ?
