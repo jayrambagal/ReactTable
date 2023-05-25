@@ -1,4 +1,7 @@
 ## ReactTable
+
+https://github.com/jayrambagal/ReactTable/assets/94613732/8a201706-4e82-4b6d-acba-83355e338953
+
 ### Building a Table in React using react-table and  react query for API queries in which user can:
 * Create User 
 * List users with
@@ -19,7 +22,7 @@
 
 
 
-https://github.com/jayrambagal/ReactTable/assets/94613732/8a201706-4e82-4b6d-acba-83355e338953
+
 
 
   
